@@ -1,2 +1,2 @@
 # naidneelttil.github.io
-pages for project
+this is my github pages for projects ive done
