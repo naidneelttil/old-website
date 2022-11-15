@@ -1,0 +1,54 @@
+---
+layout: post
+title: "LFS part 1"
+date: 2020-04-29 13:49:10 -0400
+catagories: LFS
+---
+
+So for the system requirements I’m making this on a Lubuntu instance in VMware Workstation. If you were wondering why my announcement and this post has been so far apart figuring out the initial setup was one of them. If you are trying to do this project I highly recommend you to be familiar with virtual machines (if you aren’t doing this on physical hardware of course). I initially was planning on doing this in virtualbox but I ran into a lot of issues.
+
+I also highly recommend you running the version-check bash script given by the 9.1 LFS book. You maybe thinking, “well I have an modern operating system, everything should be in order” but here is the output from the version-check script on a fresh install of Lubuntu:
+
+
+![image](/assets/LFSpart1/image3.png)
+
+
+As you can see, not everything is already there and packaged for you. In my case I had to install build-essential, gawk, texinfo, m4, bison and change the symbolic link for bash (‘sudo ln -sf bash /bin/sh’) to get the check to be happy with me.
+
+
+![image](/assets/LFSpart1/image1.png)
+
+
+
+The next step in the process is setting up the partitions for LFS. Before doing anything, the way I set up the disk is this.
+
+
+![image](/assets/LFSpart1/image5.png)
+
+
+
+According to GParted, you can see that I have 12.89G unallocated for my Linux from Scratch system. 10 Gigabytes for the root partition and 2 Gigabytes for the home partition, and I’m still going to use the /dev/sda5 as linux-swap. Since I’m not using GPT partitioning and using MBR instead, I don’t need a boot partition (I’m pretty sure. If not I can use that last .89 Gigs to rectify my mistakes).
+
+And that’s my plan here. Partitioning was always my least favorite part of my past Arch Linux installs, and fdisk still kinda scares me, but progress needs to be made, so with the help of the archwiki :
+
+
+![image](/assets/LFSpart1/image4.png)
+
+
+I’m not quite sure if the 83 Linux type is appropriate, but it sounds just about right. /dev/sda3 is my root partition, /dev/sda4 is the home partition, with /dev/sda5 as swap. I’m formatting the home and root partition with ext4 file system. This was also the default I used for arch, because it was new and a generally safe option. Just in case I mess this up now, I'm going to take a snapshot of my virtual machine state here. Then used mkfs to put ext4 on /dev/sda3, and /dev/sda4. Since I am using an existing swap, I don’t need to format /dev/sda5.
+
+The next step is setting the LFS variable, I exported LFS=/mnt/lfs in .bash_profile, /root/.bash_profile, and .bashrc. (and made the directory in /mnt/lfs). After that you have to mount the partitions to each acceptable point. I mounted my root partition (dev/sda3) to $LFS, and mounted my home partition(dev/sda4) to $LFS/home.  I also edited my /etc/fstab file to automatically mount my partitions to the correct mount points. I took a snapshot here to mark my progress
+
+
+![image](/assets/LFSpart1/image2.png)
+
+And that covers the LFS book till Part 3 Packages and Patches! I hope you found this useful, or at the very least entertaining. 
+
+-naidneelttil
+
+ 
+
+                                                                                  
+
+
+<!-- Docs to Markdown version 1.0β22 -->

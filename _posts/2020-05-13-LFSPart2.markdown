@@ -1,0 +1,60 @@
+---
+layout: post
+title: "LFS part 2"
+date: 2020-05-13 19:09:03 -0400
+catagories: LFS
+---
+
+
+Happy Quarantine everyone! At least as of the writing of this post, I am still locked up by government decree, been this way for little more than a month. It Gives me time for LFS, I suppose<sup>I hate it, please send help</sup> . 
+
+So on with the install, last time we left off we started chapter 3 of 9.1 LFS book, Packages and Patches. 
+
+At this point the book makes you create the directory $LFS/sources and make this directory writable and sticky as root.  Then using the wget-list provided by the book to download the packages and patches. I’m so used to mirrorlists and repositories from other distros, but, of course, that isn’t how LFS works. 
+
+The results of the command in the $LFS/sources folder look like this:
+
+
+![image](/assets/LFSpart2/image4.png)
+
+The next step calls for the checking of each package with a provided md5sums file. I also have somewhat of a confession to make regarding this, I practically never check hashes of packages. I know, I know, that is pretty ill advised (anyone could have tampered with it and you wouldn’t notice!!!) so in the interest of good practice (honestly I really should start doing it), I’m doing so in this LFS install. All the checks passed ok, that's my quick nod to security.
+
+I’ve made the executive decision not to take any of the community patches just yet. I might highly regret that later, but I figure that if I ever need it I’ll get them when building the respective packages.  I will also take a snapshot of my machine here. (don’t wanna lose my packages!)
+
+That wraps up the third chapter of the book, It’s one of the shortest chapters, so I’m still going to do part of chapter 4 here too. Chapter 4 of LFS goes over final preparations before building the system.  A temporary tool directory is supposed to be made at $LFS/tools made as root.
+
+BUT, *RECORD SCRATCH* - *FREEZE FRAME* - I have seemed to run into my first issue! If you see the picture above, you might have caught that the /sources doesn’t seem to be at the $LFS directory,  that is because even though $LFS is defined for my user, naidneelttil on the system, $LFS didn’t seem to be properly defined for root. In the first post I thought I had fixed this by defining $LFS in  /root/.bash_profile, but it seems that the system only recognized it when I defined it in /etc/bash.bashrc. 
+
+So for the first time in this project, (but most likely not the last!) I’m going to revert back to an earlier snapshot (the one I made when I ended part 1) , and will define $LFS for root
+
+
+![image](/assets/LFSpart2/image1.png)
+
+Much better. I would like to point out that the LFS book does warn about this, 
+
+![image](/assets/LFSpart2/image3.png)
+
+
+So, don’t be me and read the book properly! Always check, and do not assume things will work. For penance, I’m redoing Chapter 3 - 
+
+(And if you’re wondering, YES, I did redo the hash check, security is my ~passion~)
+
+
+![image](/assets/LFSpart2/image2.png)
+
+Wow, much better. Taking a snapshot here. Now onto Chapter 4 for real this time!
+
+Now we are creating the $LFS/tools directory, and making a symlink to point /tools  to mnt/lfs/tools. 
+
+Then the book asks you to make a new user called lfs to do all your installing under, as doing everything as root is pretty risky. This new lfs user gets ownership of $LFS/tools and $LFS/sources. 
+
+A ~/.bashrc and a ~/.bash_profile also needs to be made with configurations that isolate the new system from the host system and maks the environment suitable for building a linux system.
+
+The book also advises that you could possibly speed up the build process of each package by taking advantage of multiple cores a system has by building with the command make -j2, I doubt that I can actually take advantage of this because I am running this on a virtual machine without multiple cores, but hey, on a physical machine or a vm with more cores this feature would be pretty useful. I’m a bit shocked by the whole idea of SBUs and standard compile times. Of course I’ve heard of this from afar, mainly people complaining about compiling packages in Gentoo, and now I get to experience it first hand! (eyyy, I did this to myself).
+
+Okay, while 4.6, the last part in chapter 4 doesn’t have you do anything yet, it does inform you of Test Suites, which the book describes as “sanity checks” to make sure everything is compiled correctly. I can taste a bit of my future, this will be a pretty daunting process.
+
+That’s everything from chapter 4, and I’ll end the post here and take a snapshot. I hope you found this useful, or at the very least entertaining.
+
+-naidneelttil
+

@@ -1,0 +1,90 @@
+---
+layout: post
+title: "LFS part 3"
+date: 2020-06-17 19:09:03 -0400 
+catagories: LFS
+---
+
+Now it’s time for the beginning of one of the two longest LFS chapters, chapter 5: Constructing a Temporary System. I certainly won’t be able to finish this entire chapter in one post, but let's try to make a dent in it.
+
+The book describes that chapter 5 has two parts. The first step is to make a host independent toolchain, and the second step is to use that toolchain to build other tools.
+
+My first impression: lots of tech jargon that I’m not quite grasping. I’m at part 5.2 and they are saying that knowing everything right off the bat isn’t required and that a lot of it will get cleared up after some packages are built. I hope so, lol. 
+
+There are a bit of things that I do get. Chroot-ing into an environment is something I recognize from Arch. I think every package is going to have a ./config.guess script that tells you the architecture the binary is made for and it is wise to check it.
+
+Using the provided input to figure out the name of the dynamic linker:
+
+![image](/assets/LFSpart3/image7.png)
+
+You can see that the interpreter I have is /lib64/ld-x86-64.so.2, so I have a 64-bit system.
+
+I also need to find the target triplet, so I unzipped binutils-2.34.tar.xz using the command ‘tar xf’ and in the decompressed file running the config.guess script.
+
+
+
+![image](/assets/LFSpart3/image5.png)
+
+
+My triplet is x86_64-pc-linux-gnu
+
+(also I noticed here that I wasn’t using the lfs user! Thankfully I caught that before I changed something drastic but again, I have to be careful!, just in case I am going to re extract binutils under the lfs user) and take another snapshot. Because I'm paranoid.
+
+Now It’s time to actually build some packages! First off, binutils:
+
+I have to make a separate build directory for it. I’m not quite sure if you need to make the build directory within the decompressed binutils-2.34 folder, but that’s what I’m going with since I think the book assumes each instruction starts in the decompressed folder. 
+
+It also recommends you to build with the command ‘time’ to figure out how long 1 SBU is for you.
+
+So after I prepared binutils with this:
+
+
+
+![image](/assets/LFSpart3/image1.png)
+
+
+I ran  ‘time make’. This is the time result of it (now that I’m typing this, I realize I should have timed all of the commands together as the book instructed. Ah well. I'll just add it to the next command)
+
+
+
+![image](/assets/LFSpart3/image2.png)
+
+
+
+I also then checked the sanity of my toolchain because I’m building a x86_64 system.
+
+
+
+![image](/assets/LFSpart3/image4.png)
+
+
+
+Then I ran ‘time make install’ and the time result for that is:
+
+
+
+![image](/assets/LFSpart3/image6.png)
+
+So 1 SBU is (2 minutes 44.953 seconds + 2.497 seconds) which is just 2 minutes and 47.45 seconds, lets just round it to 3 minutes for simplicity. Dope. per instructions I’ve deleted the decompressed file,  and along it the /build folder I made.
+
+Now for GCC! 10 SBUs, so its Approximately 30 minutes.Q
+
+I’ve extracted it and cd’ed into it. Then the book has you extract and move around more files in GCC. This is because GCC requires GMP, MPFR, and MPC packages. I followed the instructions and installed GCC - no errors. 
+
+You know the feeling where things are going a little too well? I feel like I’ve done something wrong but I can’t quite place my finger on it. It’ll probably be exposed later on. (hopefully not too far along though!)
+
+The next step is installing LInux API headers. This was pretty short, made sure there was no stale files, used make to make it all and then I moved it all to /tools/include.
+
+The next step is Glibc, which took a bit longer to build, but also went pretty smoothly. This was also another backage that had to be built in a seperate /build directory. 
+
+And to complete the sanity check to make sure the compiling and linking works :
+
+
+
+![image](/assets/LFSpart3/image3.png)
+
+
+...And it does! (#blessed) . the next test would be to see if binutils builds fine. Which we will be doing in the next post! For now, I’m taking a snapshot. I hope you found this useful, or at the very least entertaining.
+
+-naidneelttil
+

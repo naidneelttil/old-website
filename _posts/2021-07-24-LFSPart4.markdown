@@ -1,0 +1,43 @@
+---
+layout: post
+title: "LFS Part 4"
+date: 2021-07-24 19:09:03 -0400 
+catagories: LFS
+---
+
+
+AUTHOR’S NOTE:
+
+The following was written back in the summer of 2020, and is all moot as the VM that I was using as the LFS host was corrupted, along with many other VM’s I kept on my laptop. I’m still going to upload this part as it is still part of my learning process and research. 
+
+However please note that this will be the end of the first attempt. (I’m not giving up, don’t worry ). All will be done from scratch (hehe) again and will be redocumented. 
+
+Hopefully I can actually stick to regular updates instead of year long gaps - I’ve dedicated time to this effect. I’ve been accepted to a school with a pretty respectable computer science program, so while I might not have the same quantity of time, hopefully in the future I can improve the quality of these posts.
+
+In the meanwhile, enjoy the obliviousness of my deluded past self, thinking that maybe this project might go my way. 
+
+-------------------------------------------------------------------------------------------------------------------------
+
+Welcome back to Quarantine LFS,  Yes we are still going strong. We are back at it again at Chapter 5 of the 9.1 Linux from Scratch book. Nothing bad has happened yet, but we will see. 
+
+The next step is installing Libstdc++, the standard library of C++. This package also seems to require a separate build directory. There was a brief moment where I was looking through the sources  and was a bit confused that I couldn't find it, but upon closer reading this package seems to be a part of gcc, so to install it I have to use the gcc-9.2.0 package.   Following the instructions to install it, it follows through good.
+
+You know, maybe this won’t be this bad. I feel myself getting lulled into a feeling of security with this project, and I know I shouldn’t, but it feels like previous arch installs in the past. When I was first doing arch installs, it was like as long as I was literate and could read instructions things would turn out ok. (or at least I could dig through the forums to solve my problems if things went REALLY bad).
+
+The next step is the second pass of binutils. This also requires a separate build directory. I’ve noticed throughout this process most packages are given some sort of initial configuration that has to be made to account for the LFS. I will take the instructions in 5.9.1 installation of binutils
+
+
+
+![image](/assets/LFSpart4/image1.png)
+
+
+You need to set some configuration options in order to build this correctly, with LFS in mind. In earlier packages I didn’t pay much attention to it, I just typed it in. Of course that isn't in the spirit of LFS -- so as an exercise to myself I’m going to summarize (in my own words, because this is explained in the book) what this block of code entails. 
+
+You can see that there are quite a few references to $LFS_TGT, this is so the build uses the tools we have rather than depending on the tools in our host system.  The  --with-lib-path = /tools/lib is also in this same vein. We are specifying that we want to use the lib path that we have and not the one on our host system.  I have to try to wrap my head around the --with-sysroot one though.  So in order for the linker to find the correct shared objects we need to specify that we want to use the sysroot directory in  /tools/$LFS_TGT/sys-root. This doesn’t exist, but we define it as such in order to make sure it doesn’t use /etc/ld.so.conf on the host system. 
+
+--disable-werror, according to online research, as it is not explained here in the book, is to prevent the compiler from treating warnings as errors.  For more information check out this article by Phllip Johnston on the reasoning why the creators of LFS may have decided to add in this flag ([https://embeddedartistry.com/blog/2017/05/22/werror-is-not-your-friend/](https://embeddedartistry.com/blog/2017/05/22/werror-is-not-your-friend/))
+
+nls stands for native language support. Apparently according to gcc.gnu.org  --enable-nls lets GCC output diagnostics in languages other than american english, So I’m going to make the leap and say that disabling nls makes sure that the diagnostics don’t stray from american english.   So that’s quite interesting, I wonder if that is just a convention that the creators of this project have hardwired into themselves, although I suppose perhaps the non english versions of the LFS book  probably don’t have this option enabled. 
+
+Afterwards you  prepare the linker with some make parameters to remove compiled files in the ld subdirectory and then rebuild them. And that prepares you for the next part of  LFS, which is the second pass of GCC.
+
